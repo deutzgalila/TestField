@@ -3,11 +3,16 @@
 */
 
 function initRevealEffects() {
-    // Select sections and cards but EXCLUDE the hero canvas and content to ensure immediate visibility
-    const revealTargets = document.querySelectorAll('section:not(#hero) .container > *, .glass-card, .expertise-marquee > *');
+    // Correct selector: children of sections (excluding hero) and cards
+    const revealTargets = document.querySelectorAll('section:not(#hero) > *, .glass-card, .expertise-marquee > *');
     if (!revealTargets.length) return;
 
-    revealTargets.forEach((target) => target.classList.add('js-reveal'));
+    revealTargets.forEach((target) => {
+        // Only apply if not already visible or a hero element
+        if (!target.closest('#hero')) {
+            target.classList.add('js-reveal');
+        }
+    });
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
         revealTargets.forEach((target) => target.classList.add('is-visible'));
@@ -23,7 +28,11 @@ function initRevealEffects() {
         });
     }, { threshold: 0.1 });
 
-    revealTargets.forEach((target) => observer.observe(target));
+    revealTargets.forEach((target) => {
+        if (target.classList.contains('js-reveal')) {
+            observer.observe(target);
+        }
+    });
 }
 
 function startMainThreadHero(canvas) {
@@ -31,36 +40,55 @@ function startMainThreadHero(canvas) {
     if (!ctx) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    // Ensure canvas size is set for 2D fallback
+
     const resize = () => {
         canvas.width = canvas.clientWidth * window.devicePixelRatio;
         canvas.height = canvas.clientHeight * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
     };
     window.addEventListener('resize', resize);
     resize();
 
-    const particles = Array.from({ length: 80 }, () => ({
+    const particles = Array.from({ length: 120 }, () => ({
         x: Math.random() * canvas.clientWidth,
         y: Math.random() * canvas.clientHeight,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        radius: Math.random() * 2 + 1
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.5 + 1
     }));
+
+    const mouse = { x: -1000, y: -1000 };
+    window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    });
 
     function draw() {
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-        ctx.fillStyle = '#3b82f6';
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+
         particles.forEach(p => {
+            const dx = mouse.x - p.x;
+            const dy = mouse.y - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 150) {
+                p.vx += dx * 0.0001;
+                p.vy += dy * 0.0001;
+            }
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < 0 || p.x > canvas.clientWidth) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.clientHeight) p.vy *= -1;
+
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
             ctx.fill();
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.x < 0 || p.x > canvas.clientWidth) p.vx *= -1;
-            if (p.y < 0 || p.y > canvas.clientHeight) p.vy *= -1;
         });
+
         if (!reducedMotion) requestAnimationFrame(draw);
     }
     draw();
@@ -70,9 +98,6 @@ async function initHero() {
     const canvas = document.querySelector('#hero-canvas');
     if (!canvas) return;
 
-    // Standard hero should be visible immediately
-    canvas.style.opacity = '1';
-
     if (!('transferControlToOffscreen' in canvas) || !window.Worker) {
         startMainThreadHero(canvas);
         return;
@@ -81,7 +106,7 @@ async function initHero() {
     try {
         const worker = new Worker('worker.js', { type: 'module' });
         const offscreen = canvas.transferControlToOffscreen();
-        
+
         worker.postMessage({
             type: 'init',
             canvas: offscreen,
@@ -98,11 +123,10 @@ async function initHero() {
             worker.postMessage({ type: 'mousemove', x: e.clientX, y: e.clientY });
         });
     } catch (e) {
-        console.warn('Hero worker failed, using fallback.');
         startMainThreadHero(canvas);
     }
 }
 
-// In modules, we can run immediately
 initRevealEffects();
 initHero();
+
