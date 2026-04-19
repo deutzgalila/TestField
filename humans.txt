@@ -1,0 +1,16 @@
+/* TEAM */
+Software Orchestrator: Deutz Cymar Galila
+Site: yourname.dev
+GitHub: https://github.com/your-github
+
+/* THANKS */
+Three.js Community
+Inter Font by Rasmus Andersson
+
+/* SITE */
+Standards: HTML5, CSS3, ES2026, WebGL, WebGPU Fallback
+Accessibility: WCAG 2.2 Level AA
+Software: Vanilla JS, Three.js
+Performance: OffscreenCanvas, Web Workers, CSS Scroll-Driven Animations
+Theme: "The Orchestrator"
+Date: 2026-04-19
