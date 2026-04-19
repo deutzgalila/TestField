@@ -1,10 +1,10 @@
 /* 
-   Modern Semantic Design Token System - 2026 Trends
-   Focused on the "Software Orchestrator" Theme
+   Deutz Cymar Galila — Software Orchestrator
+   Modern Semantic Design System
 */
 
 :root {
-    /* Global/Primitive Tokens */
+    /* Design Tokens */
     --blue-500: #3b82f6;
     --blue-600: #2563eb;
     --gray-50: #f9fafb;
@@ -13,7 +13,6 @@
     --gray-900: #111827;
     --gray-950: #030712;
     
-    /* Semantic Tokens - Default (Dark Mode Preferred) */
     --surface-base: var(--gray-950);
     --surface-raised: var(--gray-900);
     --surface-overlay: var(--gray-800);
@@ -27,25 +26,20 @@
     
     --container-max-width: 1200px;
     --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
     --focus-ring: 0 0 0 3px var(--blue-500);
 }
 
-/* Light Mode Fallback / Toggle (Optional Tiering) */
 @media (prefers-color-scheme: light) {
     :root {
         --surface-base: var(--gray-50);
         --surface-raised: #ffffff;
         --surface-overlay: var(--gray-100);
-        
         --text-primary: var(--gray-950);
         --text-secondary: var(--gray-900);
-        
         --color-accent: var(--blue-600);
     }
 }
 
-/* Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -65,7 +59,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Accessibility: Skip to Content */
 .skip-link {
     position: absolute;
     top: -40px;
@@ -81,13 +74,11 @@ body {
     top: 0;
 }
 
-/* Accessibility: Focus States */
 :focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
 }
 
-/* Layout Primitives */
 .container {
     max-width: var(--container-max-width);
     margin: 0 auto;
@@ -101,6 +92,9 @@ section {
 #hero {
     position: relative;
     overflow: hidden;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
 }
 
 #hero-canvas {
@@ -128,30 +122,6 @@ a {
     transition: var(--transition-smooth);
 }
 
-/* 2026 Minimalist UI Elements */
-/* 2026 Native CSS Scroll-Driven Animations */
-@keyframes reveal {
-    from {
-        opacity: 0;
-        transform: translateY(50px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-section.container {
-    view-timeline-name: --section-reveal;
-    view-timeline-axis: block;
-}
-
-section.container > * {
-    animation: reveal linear both;
-    animation-timeline: --section-reveal;
-    animation-range: entry 20% cover 40%;
-}
-
 .glass-card {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
@@ -159,10 +129,6 @@ section.container > * {
     border-radius: 1rem;
     padding: 2rem;
     transition: var(--transition-smooth);
-    /* Individual card reveal */
-    animation: reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 10% cover 30%;
 }
 
 .glass-card:hover {
@@ -173,7 +139,7 @@ section.container > * {
 .js-reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .js-reveal.is-visible {
@@ -181,16 +147,19 @@ section.container > * {
     transform: translateY(0);
 }
 
-/* Reduced Motion Primitives */
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
     }
     
     *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        animation: none !important;
+        transition: none !important;
         scroll-behavior: auto !important;
+    }
+    
+    .js-reveal {
+        opacity: 1;
+        transform: none;
     }
 }
