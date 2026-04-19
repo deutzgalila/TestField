@@ -3,12 +3,10 @@
 */
 
 function initRevealEffects() {
-    // Correct selector: children of sections (excluding hero) and cards
     const revealTargets = document.querySelectorAll('section:not(#hero) > *, .glass-card, .expertise-marquee > *');
     if (!revealTargets.length) return;
 
     revealTargets.forEach((target) => {
-        // Only apply if not already visible or a hero element
         if (!target.closest('#hero')) {
             target.classList.add('js-reveal');
         }
@@ -42,10 +40,15 @@ function startMainThreadHero(canvas) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const resize = () => {
-        canvas.width = canvas.clientWidth * window.devicePixelRatio;
-        canvas.height = canvas.clientHeight * window.devicePixelRatio;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        if (width === 0 || height === 0) return;
+
+        canvas.width = width * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
         ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
     };
+
     window.addEventListener('resize', resize);
     resize();
 
@@ -65,6 +68,8 @@ function startMainThreadHero(canvas) {
     });
 
     function draw() {
+        if (canvas.clientWidth === 0) return requestAnimationFrame(draw);
+
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
         ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
 
@@ -98,6 +103,11 @@ async function initHero() {
     const canvas = document.querySelector('#hero-canvas');
     if (!canvas) return;
 
+    // Force visibility and check dimensions
+    canvas.style.opacity = '1';
+    canvas.style.visibility = 'visible';
+    canvas.style.display = 'block';
+
     if (!('transferControlToOffscreen' in canvas) || !window.Worker) {
         startMainThreadHero(canvas);
         return;
@@ -127,6 +137,13 @@ async function initHero() {
     }
 }
 
-initRevealEffects();
-initHero();
-
+// Ensure layout is fully settled before initializing hero
+if (document.readyState === 'complete') {
+    initRevealEffects();
+    initHero();
+} else {
+    window.addEventListener('load', () => {
+        initRevealEffects();
+        initHero();
+    });
+}

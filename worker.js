@@ -2,7 +2,7 @@
    Deutz Cymar Galila — Graphics Worker
 */
 
-import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import * as THREE from './three.module.js';
 
 let renderer, scene, camera, particles;
 let mouseX = 0, mouseY = 0;
