@@ -170,17 +170,15 @@ section.container > * {
     border-color: var(--color-accent);
 }
 
-@supports not (animation-timeline: view()) {
-    .js-reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
-    }
+.js-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
 
-    .js-reveal.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.js-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Reduced Motion Primitives */

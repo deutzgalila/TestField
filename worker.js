@@ -9,6 +9,8 @@ let renderer, scene, camera, particles;
 let mouseX = 0, mouseY = 0;
 let width = 0, height = 0;
 
+self.postMessage({ type: 'worker-ready' });
+
 self.onmessage = function(e) {
     const data = e.data;
     
