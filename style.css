@@ -98,6 +98,25 @@ section {
     padding: 8rem 0;
 }
 
+#hero {
+    position: relative;
+    overflow: hidden;
+}
+
+#hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+#hero .hero-content {
+    position: relative;
+    z-index: 1;
+}
+
 h1, h2, h3 {
     line-height: 1.1;
     margin-bottom: 1.5rem;
@@ -122,12 +141,12 @@ a {
     }
 }
 
-section > .container {
+section.container {
     view-timeline-name: --section-reveal;
     view-timeline-axis: block;
 }
 
-section > .container > * {
+section.container > * {
     animation: reveal linear both;
     animation-timeline: --section-reveal;
     animation-range: entry 20% cover 40%;
@@ -149,6 +168,19 @@ section > .container > * {
 .glass-card:hover {
     background: rgba(255, 255, 255, 0.05);
     border-color: var(--color-accent);
+}
+
+@supports not (animation-timeline: view()) {
+    .js-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .js-reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Reduced Motion Primitives */

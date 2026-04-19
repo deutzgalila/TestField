@@ -18,6 +18,10 @@ async function init() {
     const offscreen = canvas.transferControlToOffscreen();
     const worker = new Worker('worker.js', { type: 'module' });
 
+    worker.addEventListener('error', (event) => {
+        console.error('Hero worker failed to initialize.', event.message || event);
+    });
+
     // Send the offscreen canvas to the worker
     worker.postMessage({
         type: 'init',
@@ -46,6 +50,31 @@ async function init() {
     });
 }
 
+function initRevealFallback() {
+    if ('CSS' in window && CSS.supports('animation-timeline: view()')) {
+        return;
+    }
+
+    const revealTargets = document.querySelectorAll('section.container > *, .glass-card');
+    revealTargets.forEach((target) => target.classList.add('js-reveal'));
+
+    if (!('IntersectionObserver' in window)) {
+        revealTargets.forEach((target) => target.classList.add('is-visible'));
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    revealTargets.forEach((target) => observer.observe(target));
+}
+
 // Check for Reduced Motion preference
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 if (!prefersReducedMotion.matches) {
@@ -53,3 +82,5 @@ if (!prefersReducedMotion.matches) {
 } else {
     console.log('Reduced motion enabled: Hero animation disabled.');
 }
+
+initRevealFallback();
