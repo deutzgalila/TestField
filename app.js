@@ -2,10 +2,9 @@
    Deutz Cymar Galila — Application Logic
 */
 
-const HERO_WORKER_READY_TIMEOUT = 1500;
-
 function initRevealEffects() {
-    const revealTargets = document.querySelectorAll('section.container > *, .glass-card, .expertise-marquee > *');
+    // Select sections and cards but EXCLUDE the hero canvas and content to ensure immediate visibility
+    const revealTargets = document.querySelectorAll('section:not(#hero) .container > *, .glass-card, .expertise-marquee > *');
     if (!revealTargets.length) return;
 
     revealTargets.forEach((target) => target.classList.add('js-reveal'));
@@ -32,7 +31,17 @@ function startMainThreadHero(canvas) {
     if (!ctx) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const particles = Array.from({ length: 100 }, () => ({
+    
+    // Ensure canvas size is set for 2D fallback
+    const resize = () => {
+        canvas.width = canvas.clientWidth * window.devicePixelRatio;
+        canvas.height = canvas.clientHeight * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const particles = Array.from({ length: 80 }, () => ({
         x: Math.random() * canvas.clientWidth,
         y: Math.random() * canvas.clientHeight,
         vx: (Math.random() - 0.5) * 0.5,
@@ -41,7 +50,7 @@ function startMainThreadHero(canvas) {
     }));
 
     function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
         ctx.fillStyle = '#3b82f6';
         particles.forEach(p => {
             ctx.beginPath();
@@ -49,8 +58,8 @@ function startMainThreadHero(canvas) {
             ctx.fill();
             p.x += p.vx;
             p.y += p.vy;
-            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            if (p.x < 0 || p.x > canvas.clientWidth) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.clientHeight) p.vy *= -1;
         });
         if (!reducedMotion) requestAnimationFrame(draw);
     }
@@ -60,6 +69,9 @@ function startMainThreadHero(canvas) {
 async function initHero() {
     const canvas = document.querySelector('#hero-canvas');
     if (!canvas) return;
+
+    // Standard hero should be visible immediately
+    canvas.style.opacity = '1';
 
     if (!('transferControlToOffscreen' in canvas) || !window.Worker) {
         startMainThreadHero(canvas);
@@ -86,11 +98,11 @@ async function initHero() {
             worker.postMessage({ type: 'mousemove', x: e.clientX, y: e.clientY });
         });
     } catch (e) {
+        console.warn('Hero worker failed, using fallback.');
         startMainThreadHero(canvas);
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initRevealEffects();
-    initHero();
-});
+// In modules, we can run immediately
+initRevealEffects();
+initHero();
