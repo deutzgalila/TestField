@@ -1,11 +1,11 @@
 # 11ms.txt
 # Domain Verification & Performance Target
-DOMAIN: yourname.dev
+DOMAIN: deutzgalila.github.io
 BUDGET_LCP: 1200ms
 BUDGET_FID: 100ms
 BUDGET_CLS: 0.1
 AUTHOR: Deutz Cymar Galila
 THEME: Software Orchestrator
-CONTACT: your-email@example.com
+CONTACT: deutzgalila@gmail.com
 STATUS: Active
 DATE: 2026-04-19

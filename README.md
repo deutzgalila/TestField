@@ -20,7 +20,7 @@ A high-performance, developer-centric portfolio designed for the 2026 web. This 
 - **Concurrency:** Web Workers & `OffscreenCanvas`
 - **Animations:** CSS Scroll-Driven Animations API
 - **Fonts:** Inter (Preloaded)
-- **Deployment:** Vercel
+- **Deployment:** GitHub Pages / Vercel (https://deutzgalila.github.io/TestField)
 
 ## 📂 Project Structure
 

@@ -1,7 +1,7 @@
 /* TEAM */
 Software Orchestrator: Deutz Cymar Galila
-Site: yourname.dev
-GitHub: https://github.com/your-github
+Site: deutzgalila.github.io/TestField
+GitHub: https://github.com/deutzgalila
 
 /* THANKS */
 Three.js Community
